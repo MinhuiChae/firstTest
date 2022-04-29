@@ -1,9 +1,7 @@
 import express from "express"
 
-
 const bodyParser = require('body-parser')
 const mysql = require('mysql')
-const Connection = require('mysql/lib/Connection')
 
 const app = express()
 const port = process.env.PORT || 5000
