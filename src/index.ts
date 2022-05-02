@@ -3,14 +3,14 @@ import express from "express"
 const bodyParser = require('body-parser')
 const mysql = require('mysql')
 
-const app = express()
+const app = express()// express 객체
 const port = process.env.PORT || 5000
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
 
 const pool = mysql.createPool({
-  connectionLimit:10,
+  connectionLimit:10, //최대 커넥션 갯수
   host: 'localhost',
   user: 'cmh03',
   password: '0330',
@@ -18,12 +18,12 @@ const pool = mysql.createPool({
 })
 
 app.get('', (req: express.Request, res: express.Response) => {
-  pool.getConnection((err: any, Connection: any) => {
+  pool.getConnection((err: Error, Connection: any) => {
     if(err) throw err
     console.log(`connected as id ${Connection.threadId}`)
 
-    Connection.query('SELECT * from inform', (err: any, rows: any) => {
-      Connection.release()
+    Connection.query('SELECT * from inform', (err: Error, rows: any) => {
+      Connection.release() //pool을 반납
 
       if(!err){
         res.send(rows)
@@ -36,11 +36,11 @@ app.get('', (req: express.Request, res: express.Response) => {
 
 //get 
 app.get('/:id', (req: express.Request, res: express.Response) => {
-  pool.getConnection((err: any, Connection: any) => {
+  pool.getConnection((err: Error, Connection: any) => {
     if(err) throw err
     console.log(`connected as id ${Connection.threadId}`)
 
-    Connection.query('SELECT * from inform WHERE id = ?',[req.params.id], (err: any, rows: any) => {
+    Connection.query('SELECT * from inform WHERE id = ?',[req.params.id], (err: Error, rows: any) => {
       Connection.release()
 
       if(!err){
@@ -54,11 +54,11 @@ app.get('/:id', (req: express.Request, res: express.Response) => {
 
 //delete
 app.delete('/:id', (req: express.Request, res: express.Response) => {
-  pool.getConnection((err: any, Connection: any) => {
+  pool.getConnection((err: Error, Connection: any) => {
     if(err) throw err
     console.log(`connected as id ${Connection.threadId}`)
 
-    Connection.query('DELETE from inform WHERE id = ?',[req.params.id], (err: any, rows: any) => {
+    Connection.query('DELETE from inform WHERE id = ?',[req.params.id], (err: Error) => {
       Connection.release()
 
       if(!err){
@@ -72,13 +72,13 @@ app.delete('/:id', (req: express.Request, res: express.Response) => {
 
 //add
 app.post('', (req: express.Request, res: express.Response) => {
-  pool.getConnection((err: any, Connection: any) => {
+  pool.getConnection((err: Error, Connection: any) => {
     if(err) throw err
     console.log(`connected as id ${Connection.threadId}`)
 
     const params = req.body
 
-    Connection.query('INSERT INTO inform SET ?',params, (err: any, rows: any) => {
+    Connection.query('INSERT INTO inform SET ?',params, (err: Error) => {
       Connection.release()
 
       if(!err){
@@ -100,7 +100,7 @@ app.put('', (req: express.Request, res: express.Response) => {
 
     const {id, name, age, gender} = req.body
 
-    Connection.query('UPDATE inform SET name = ?, age = ?, gender = ? WHERE id = ?',[name, age, gender, id], (err: any, rows: any) => {
+    Connection.query('UPDATE inform SET name = ?, age = ?, gender = ? WHERE id = ?',[name, age, gender, id], (err: Error) => {
       Connection.release()
 
       if(!err){
