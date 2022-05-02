@@ -1,10 +1,9 @@
 import express from "express"
-
-const bodyParser = require('body-parser')
-const mysql = require('mysql')
+import bodyParser from 'body-parser'
+import mysql from 'mysql'
 
 const app = express()// express 객체
-const port = process.env.PORT || 5000
+const port: string | number = process.env.PORT || 5000
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())
@@ -22,7 +21,7 @@ app.get('', (req: express.Request, res: express.Response) => {
     if(err) throw err
     console.log(`connected as id ${Connection.threadId}`)
 
-    Connection.query('SELECT * from inform', (err: Error, rows: any) => {
+    Connection.query('SELECT * from inform', (err: Error, rows: express.Request) => {
       Connection.release() //pool을 반납
 
       if(!err){
@@ -40,7 +39,7 @@ app.get('/:id', (req: express.Request, res: express.Response) => {
     if(err) throw err
     console.log(`connected as id ${Connection.threadId}`)
 
-    Connection.query('SELECT * from inform WHERE id = ?',[req.params.id], (err: Error, rows: any) => {
+    Connection.query('SELECT * from inform WHERE id = ?',[req.params.id], (err: Error, rows: express.Request) => {
       Connection.release()
 
       if(!err){
@@ -76,13 +75,11 @@ app.post('', (req: express.Request, res: express.Response) => {
     if(err) throw err
     console.log(`connected as id ${Connection.threadId}`)
 
-    const params = req.body
-
-    Connection.query('INSERT INTO inform SET ?',params, (err: Error) => {
+    Connection.query('INSERT INTO inform SET ?',req.body, (err: Error) => {
       Connection.release()
 
       if(!err){
-        res.send(`Record ID: ${params.id} has been added`)
+        res.send(`Record ID: ${req.body.id} has been added`)
       }else {
         console.log(err)
       }
@@ -94,17 +91,15 @@ app.post('', (req: express.Request, res: express.Response) => {
 
 //Update
 app.put('', (req: express.Request, res: express.Response) => {
-  pool.getConnection((err: any, Connection: any) => {
+  pool.getConnection((err: Error, Connection: any) => {
     if(err) throw err
     console.log(`connected as id ${Connection.threadId}`)
 
-    const {id, name, age, gender} = req.body
-
-    Connection.query('UPDATE inform SET name = ?, age = ?, gender = ? WHERE id = ?',[name, age, gender, id], (err: Error) => {
+    Connection.query('UPDATE inform SET name = ?, age = ?, gender = ? WHERE id = ?',[req.body.name, req.body.age, req.body.gender, req.body.id], (err: Error) => {
       Connection.release()
 
       if(!err){
-        res.send(`Record ID: ${name} has been added`)
+        res.send(`Record ID: ${req.body.name} has been added`)
       }else {
         console.log(err)
       }
