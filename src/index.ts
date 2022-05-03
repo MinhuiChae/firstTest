@@ -1,6 +1,5 @@
 import express from "express";
 import bodyParser from 'body-parser';
-import mysql from 'mysql';
 
 const app = express(); // express 객체
 const port: string | number = process.env.PORT || 5000;
@@ -8,13 +7,6 @@ const port: string | number = process.env.PORT || 5000;
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
-const pool = mysql.createPool({
-  connectionLimit:10, //최대 커넥션 갯수
-  host: 'localhost',
-  user: 'cmh03',
-  password: '0330',
-  database: 'nodejs'
-})
 
 class Inform {
   id: number = 0;
@@ -41,11 +33,20 @@ app.get('', (req: express.Request, res: express.Response) => {
 app.post('', (req: express.Request, res: express.Response) => {
 
   const a:Inform = req.body;
+  let postList: number[] = [];
 
   if(a.id && a.name && a.age && a.gender) {
-    informList.push(a);
-    res.send(informList);
-    console.log(informList);
+    for(let i = 0; i<informList.length; i++) {
+      if(informList[i].id == a.id) {
+        postList.push(i);
+      } 
+    }
+    if(postList.length > 0) {
+      res.send("중복된 아이디입니다.");
+    } else {
+      informList.push(a);
+      res.send(informList);
+    }
       
   } else {
     res.send("올바른 값을 입력하세요");
@@ -55,60 +56,43 @@ app.post('', (req: express.Request, res: express.Response) => {
 
 //get 
 app.get('/:id', (req: express.Request, res: express.Response) => {
-  pool.getConnection((err: Error, Connection: any) => {
-    if(err) throw err
-    console.log(`connected as id ${Connection.threadId}`)
 
-    Connection.query('SELECT * from inform WHERE id = ?',[req.params.id], (err: Error, rows: express.Request) => {
-      Connection.release()
-
-      if(!err){
-        res.send(rows)
-      }else {
-        console.log(err)
-      }
-    })
-  })
+  let getList: Inform[] = [];
+  for(let i = 0; i < informList.length; i++) {
+    const aa: number = Number(req.params.id);
+    let a:number = informList[i].id;
+    if(a == aa) {
+      getList.push(informList[i])
+    }
+  }
+  res.send(getList);
 })
 
 //delete
 app.delete('/:id', (req: express.Request, res: express.Response) => {
-  pool.getConnection((err: Error, Connection: any) => {
-    if(err) throw err
-    console.log(`connected as id ${Connection.threadId}`)
-
-    Connection.query('DELETE from inform WHERE id = ?',[req.params.id], (err: Error) => {
-      Connection.release()
-
-      if(!err){
-        res.send(`Record ID: ${[req.params.id]} has been removed`)
-      }else {
-        console.log(err)
-      }
-    })
-  })
+  for(let i = 0; i < informList.length; i++) {
+    const aa: number = Number(req.params.id);
+    if(informList[i].id == aa) {
+      informList.splice(i,1);
+      i--;
+    }
+  }
+  res.send(informList);
 })
-
-
 
 //Update
 app.put('', (req: express.Request, res: express.Response) => {
-  pool.getConnection((err: Error, Connection: any) => {
-    if(err) throw err
-    console.log(`connected as id ${Connection.threadId}`)
+  const a:Inform = req.body;
+  const b = informList.findIndex((i:Inform) => i.id == a.id);
 
-    Connection.query('UPDATE inform SET name = ?, age = ?, gender = ? WHERE id = ?',[req.body.name, req.body.age, req.body.gender, req.body.id], (err: Error) => {
-      Connection.release()
+  if(a.id && a.name && a.age && a.gender) {
+  informList.splice(b,1);
+  informList.push(req.body);
 
-      if(!err){
-        res.send(`Record ID: ${req.body.name} has been added`)
-      }else {
-        console.log(err)
-      }
-    })
-
-    console.log(req.body)
-  })
+  res.send(informList);
+  } else {
+    res.send("올바른 값을 입력하세요");
+  }
 })
 
 
