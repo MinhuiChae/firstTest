@@ -17,7 +17,7 @@ class Inform {
     return (this.id !== 0 && this.name !== undefined && this.age  !== 0 && this.gender !== undefined );
   }
 
-  checkInform(): boolean | undefined {
+  isInformForm(): boolean | undefined {
     if (this.id && this.name && this.age && this.gender) {
       return true;
     }

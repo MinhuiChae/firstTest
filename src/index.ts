@@ -19,15 +19,16 @@ app.get('', (req: express.Request, res: express.Response) => {
 app.post('', (req: express.Request, res: express.Response) => {
 
   const inform:Inform = new Inform(req.body as IInformReq);
-  let postList: number[] = [];
+  let validIdList: number[] = [];
 
-  if(inform.checkInform()) {
-    for(let i = 0; i<informList.length; i++) {
-      if(informList[i].id == inform.id) {
-        postList.push(i);
-      } 
-    }
-    if(postList.length > 0) {
+  if(inform.isInformForm()) {
+    informList.find((i:Inform) => {
+      if(i.id == inform.id) {
+        validIdList.push(i.id);
+      }
+    })
+
+    if(validIdList.length > 0) {
       res.send("중복된 아이디입니다.");
     } else {
       informList.push(inform);
@@ -40,8 +41,8 @@ app.post('', (req: express.Request, res: express.Response) => {
 
 //get 
 app.get('/:id', (req: express.Request, res: express.Response) => {
-  const numId: number = Number(req.params.id);
-  const informId = informList.find((i:Inform) => i.id == numId);
+  const paramsId: number = Number(req.params.id);
+  const informId = informList.find((i:Inform) => i.id == paramsId);
 
   if(informId?.inValidation()) {
     res.send(informId);
@@ -52,8 +53,8 @@ app.get('/:id', (req: express.Request, res: express.Response) => {
 
 //delete
 app.delete('/:id', (req: express.Request, res: express.Response) => {
-  const numId: number = Number(req.params.id);
-  const idIndex = informList.findIndex((i:Inform) => i.id == numId);
+  const paramsId: number = Number(req.params.id);
+  const idIndex = informList.findIndex((i:Inform) => i.id == paramsId);
 
   if(idIndex === -1) {
     res.send("존재하지 않는 아이디입니다.");
@@ -68,7 +69,7 @@ app.put('', (req: express.Request, res: express.Response) => {
   const inform:Inform = new Inform(req.body as IInformReq);
   const idIndex = informList.findIndex((i:Inform) => i.id == inform.id);
 
-  if(inform.checkInform()) {
+  if(inform.isInformForm()) {
     if(idIndex === -1) {
       res.send("존재하지 않는 아이디입니다.");
     } else {
