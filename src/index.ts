@@ -2,6 +2,8 @@ import express from "express";
 import bodyParser from 'body-parser';
 import Inform from "./class";
 import IInformReq from "./IInformReq";
+import StatusCode from "./statusCode";
+import ResponseMessage from "./responseMessage";
 
 const app = express(); // express 객체
 const port: string | number = process.env.PORT || 5000;
@@ -11,53 +13,49 @@ app.use(bodyParser.json());
 
 let informList: Inform[] = [];
 
-app.get('', (req: express.Request, res: express.Response) => {
+app.get('/user', (req: express.Request, res: express.Response) => {
   res.send(informList);
 })
 
 //add
-app.post('', (req: express.Request, res: express.Response) => {
-
+app.post('/user', (req: express.Request, res: express.Response) => {
+  
   const inform:Inform = new Inform(req.body as IInformReq);
-  let validIdList: number[] = [];
 
-  if(inform.isInformForm()) {
-    informList.find((i:Inform) => {
-      if(i.id == inform.id) {
-        validIdList.push(i.id);
-      }
-    })
 
-    if(validIdList.length > 0) {
-      res.send("중복된 아이디입니다.");
+  if(inform.isValidation()) {
+    const i = informList.find((i:Inform) => i.id === inform.id);
+
+    if(i) {
+      res.status(StatusCode.DUPLICATE).send({status: StatusCode.DUPLICATE, id: req.body.id, msg: ResponseMessage.DUPLICATE_ID});
     } else {
       informList.push(inform);
       res.send(informList);
     }
   } else {
-    res.send("올바른 값을 입력하세요");
+    res.status(StatusCode.WRONGFORMAT).send({status: StatusCode.WRONGFORMAT, id: req.body.id, msg: ResponseMessage.WRONG_FORMAT});
   }
 })
 
 //get 
-app.get('/:id', (req: express.Request, res: express.Response) => {
+app.get('/user/:id', (req: express.Request, res: express.Response) => {
   const paramsId: number = Number(req.params.id);
-  const informId = informList.find((i:Inform) => i.id == paramsId);
+  const findInform: undefined | Inform = informList.find((i:Inform) => i.id == paramsId); 
 
-  if(informId?.inValidation()) {
-    res.send(informId);
+  if(findInform) {
+    res.send(findInform);
   } else {
-    res.send("존재하지 않는 아이디입니다.");
+    res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, id: paramsId, msg: ResponseMessage.NOT_FOUNT_ID}); //status 코드로 넘기기
   }
 })
 
 //delete
 app.delete('/:id', (req: express.Request, res: express.Response) => {
   const paramsId: number = Number(req.params.id);
-  const idIndex = informList.findIndex((i:Inform) => i.id == paramsId);
+  const idIndex: number = informList.findIndex((i:Inform) => i.id == paramsId);
 
   if(idIndex === -1) {
-    res.send("존재하지 않는 아이디입니다.");
+    res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, id: paramsId, msg: ResponseMessage.NOT_FOUNT_ID}); 
   } else {
     informList.splice(idIndex,1);
     res.send(informList);
@@ -65,20 +63,20 @@ app.delete('/:id', (req: express.Request, res: express.Response) => {
 })
 
 //Update
-app.put('', (req: express.Request, res: express.Response) => {
+app.put('/user', (req: express.Request, res: express.Response) => {
   const inform:Inform = new Inform(req.body as IInformReq);
   const idIndex = informList.findIndex((i:Inform) => i.id == inform.id);
 
-  if(inform.isInformForm()) {
+  if(inform.isValidation()) {
     if(idIndex === -1) {
-      res.send("존재하지 않는 아이디입니다.");
+      res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, id: req.body.id, msg: ResponseMessage.NOT_FOUNT_ID});
     } else {
       informList.splice(idIndex,1);
       informList.push(req.body);
       res.send(informList);
     }
   } else {
-    res.send("올바른 값을 입력하세요");
+    res.status(StatusCode.WRONGFORMAT).send({status: StatusCode.WRONGFORMAT, id: req.body.id, msg: ResponseMessage.WRONG_FORMAT});
   }
 })
 

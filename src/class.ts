@@ -7,21 +7,16 @@ class Inform {
   gender: string = "";
 
   constructor(req: IInformReq) {
-    this.id = req.id;
-    this.name = req.name;
-    this.age = req.age;
-    this.gender = req.gender;
+    this.id = req.id ?? 0;
+    this.name = req.name ?? "";
+    this.age = req.age ?? 0;
+    this.gender = req.gender ?? "";
   }
 
-  inValidation(): boolean {
-    return (this.id !== 0 && this.name !== undefined && this.age  !== 0 && this.gender !== undefined );
+  isValidation(): boolean {
+    return this.id !== 0 && this.name !== "" && this.age  !== 0 && this.gender !== "";
   }
 
-  isInformForm(): boolean | undefined {
-    if (this.id && this.name && this.age && this.gender) {
-      return true;
-    }
-  }
 }
 
 export default Inform;
