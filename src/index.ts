@@ -2,11 +2,17 @@ import express from "express";
 import bodyParser from 'body-parser';
 import Inform from "./class";
 import IInformReq from "./IInformReq";
-import StatusCode from "./statusCode";
 import ResponseMessage from "./responseMessage";
 
 const app = express(); // express 객체
 const port: string | number = process.env.PORT || 5000;
+
+enum StatusCode {
+  "SUCCESS" = 200,
+  "DUPLICATE" = 409,
+  "WRONGFORMAT" = 403,
+  "NOTFOUND" = 404
+}
 
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -14,7 +20,7 @@ app.use(bodyParser.json());
 let informList: Inform[] = [];
 
 app.get('/user', (req: express.Request, res: express.Response) => {
-  res.send(informList);
+  res.status(StatusCode.SUCCESS).send({status:StatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: informList });
 })
 
 //add
@@ -27,13 +33,13 @@ app.post('/user', (req: express.Request, res: express.Response) => {
     const i = informList.find((i:Inform) => i.id === inform.id);
 
     if(i) {
-      res.status(StatusCode.DUPLICATE).send({status: StatusCode.DUPLICATE, id: req.body.id, msg: ResponseMessage.DUPLICATE_ID});
+      res.status(StatusCode.DUPLICATE).send({status: StatusCode.DUPLICATE, msg: ResponseMessage.DUPLICATE_ID, data: []});
     } else {
       informList.push(inform);
-      res.send(informList);
+      res.status(StatusCode.SUCCESS).send({status:StatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: informList });
     }
   } else {
-    res.status(StatusCode.WRONGFORMAT).send({status: StatusCode.WRONGFORMAT, id: req.body.id, msg: ResponseMessage.WRONG_FORMAT});
+    res.status(StatusCode.WRONGFORMAT).send({status: StatusCode.WRONGFORMAT, msg: ResponseMessage.WRONG_FORMAT, data: []});
   }
 })
 
@@ -43,9 +49,9 @@ app.get('/user/:id', (req: express.Request, res: express.Response) => {
   const findInform: undefined | Inform = informList.find((i:Inform) => i.id == paramsId); 
 
   if(findInform) {
-    res.send(findInform);
+    res.status(StatusCode.SUCCESS).send({status:StatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: findInform });
   } else {
-    res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, id: paramsId, msg: ResponseMessage.NOT_FOUNT_ID}); //status 코드로 넘기기
+    res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); //status 코드로 넘기기
   }
 })
 
@@ -55,10 +61,10 @@ app.delete('/:id', (req: express.Request, res: express.Response) => {
   const idIndex: number = informList.findIndex((i:Inform) => i.id == paramsId);
 
   if(idIndex === -1) {
-    res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, id: paramsId, msg: ResponseMessage.NOT_FOUNT_ID}); 
+    res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); 
   } else {
     informList.splice(idIndex,1);
-    res.send(informList);
+    res.status(StatusCode.SUCCESS).send({status:StatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: informList });
   }
 })
 
@@ -69,14 +75,14 @@ app.put('/user', (req: express.Request, res: express.Response) => {
 
   if(inform.isValidation()) {
     if(idIndex === -1) {
-      res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, id: req.body.id, msg: ResponseMessage.NOT_FOUNT_ID});
+      res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); 
     } else {
       informList.splice(idIndex,1);
       informList.push(req.body);
-      res.send(informList);
+      res.status(StatusCode.SUCCESS).send({status:StatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: informList });
     }
   } else {
-    res.status(StatusCode.WRONGFORMAT).send({status: StatusCode.WRONGFORMAT, id: req.body.id, msg: ResponseMessage.WRONG_FORMAT});
+    res.status(StatusCode.WRONGFORMAT).send({status: StatusCode.WRONGFORMAT, msg: ResponseMessage.WRONG_FORMAT, data: []});
   }
 })
 
