@@ -47,14 +47,11 @@ exports.update = (req: express.Request, res: express.Response) => {
   const foundIndex: number = userService.findIndex(inform.id);
 
   if(inform.isValidation()) {
-    console.log(foundIndex);
-    console.log(informList);
     if(foundIndex === -1) {
       res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); 
     } else {
       userService.spliceOneIndex(userService.findIndex(foundIndex));
       userService.pushInform(inform);
-      console.log(informList);
       res.status(StatusCode.SUCCESS).send({status:StatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: informList });
     }
   } else {
