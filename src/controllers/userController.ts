@@ -4,13 +4,13 @@ import ResponseMessage from "../model/responseMessage";
 import IInformReq from "../model/IInformReq";
 import informList from "../services/userService";
 const userService = require("../services/userService");
+
 enum StatusCode {
   "SUCCESS" = 200,
   "DUPLICATE" = 409,
   "WRONGFORMAT" = 403,
   "NOTFOUND" = 404
 }
-
 
 exports.get =(req: express.Request, res: express.Response) => {
   res.status(StatusCode.SUCCESS).send({status:StatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: informList });

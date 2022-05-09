@@ -1,5 +1,5 @@
 import Inform from "../model/class";
-const informList: Inform[] = [];
+let informList: Inform[] = [];
 
 exports.findInformById =(inform: Inform) => {
   try {
@@ -20,7 +20,7 @@ exports.findIndex = (paramsNumber: number) => {
   let indexNumber: number = 0;
   try {
     indexNumber = informList.findIndex((i:Inform) => i.id == paramsNumber);
-  } catch(err: any) {
+  } catch(err ) {
     console.log(err);
   }
 
@@ -30,7 +30,6 @@ exports.findIndex = (paramsNumber: number) => {
 exports.spliceOneIndex = (paramsNumber: number) => {
   informList.splice(paramsNumber, 1);
 }
-
 
 export default informList;
 
