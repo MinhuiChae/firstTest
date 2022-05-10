@@ -40,7 +40,7 @@ exports.deleteInform = (paramsNumber: number) => {
   if(informIndex !== -1) {
     informList.splice(informIndex, 1);
   } else {
-    console.log("Not Found");
+    console.log("Not Found ID");
   }
 
   return informIndex;

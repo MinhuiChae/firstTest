@@ -31,19 +31,16 @@ exports.post =(req: express.Request, res: express.Response) => {
 
 exports.delete = (req: express.Request, res: express.Response) => {
   const paramsId: number = Number(req.params.id);
-
-      if(userService.deleteInform(paramsId) === -1) {
-        res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); 
-      }else {
-        userService.deleteInform(paramsId);
-        res.status(StatusCode.SUCCESS).send({status:StatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: informList });
-      }
-        
+  if(userService.deleteInform(paramsId) === -1) {
+    res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); 
+  }else {
+    userService.deleteInform(paramsId);
+    res.status(StatusCode.SUCCESS).send({status:StatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: informList });
+  } 
 }
 
 exports.update = (req: express.Request, res: express.Response) => {
   const inform:Inform = new Inform(req.body as IInformReq);
-
   if(inform.isValidation()) {
      if(userService.deleteInform(inform.id) === -1) {
       res.status(StatusCode.NOTFOUND).send({status: StatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); 
