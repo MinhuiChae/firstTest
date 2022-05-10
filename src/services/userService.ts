@@ -2,35 +2,50 @@ import Inform from "../model/class";
 let informList: Inform[] = [];
 
 exports.findInformById =(inform: Inform) => {
+  let foundInform: any;
   try {
-    informList.find((i:Inform) => i.id === inform.id);
-
+    foundInform = informList.find((i:Inform) => i.id === inform.id);
   }catch(err: any) {
     console.log(err);
   }
 
-  return informList.find((i:Inform) => i.id === inform.id);
+  return foundInform;
 }
 
 exports.pushInform = (inform: Inform) => {
-  informList.push(inform);
+  try {
+    informList.push(inform);
+  }
+  catch(err) {
+    console.log(err);
+  }
+  
+  return informList;
 }
 
-exports.findIndex = (paramsNumber: number) => {
+const findIndex = (paramsNumber: number) => {
   let indexNumber: number = 0;
   try {
     indexNumber = informList.findIndex((i:Inform) => i.id == paramsNumber);
-  } catch(err ) {
+  } catch(err) {
     console.log(err);
   }
 
   return indexNumber;
 }
 
-exports.spliceOneIndex = (paramsNumber: number) => {
-  informList.splice(paramsNumber, 1);
+exports.deleteInform = (paramsNumber: number) => {
+  let informIndex: number = findIndex(paramsNumber);
+
+  if(informIndex !== -1) {
+    informList.splice(informIndex, 1);
+  } else {
+    console.log("Not Found");
+  }
+
+  return informIndex;
 }
 
-export default informList;
+export{informList, findIndex};
 
 
