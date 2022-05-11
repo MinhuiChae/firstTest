@@ -5,4 +5,6 @@ interface IInformReq{
   gender: string,
 }
 
-export default IInformReq;
+export {
+  IInformReq
+} ;

@@ -1,5 +1,3 @@
-
-
 const respMsg = {
   SUCCESS: "성공하였습니다.",
   DUPLICATE_ID: "중복된 아이디입니다.",

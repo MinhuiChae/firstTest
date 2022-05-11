@@ -1,6 +1,7 @@
-import IInformReq from './IInformReq';
 
-class Inform {
+import { IInformReq } from "../interface";
+
+class InformModel {
   id: number = 0;
   name: string = "";
   age: number = 0;
@@ -19,4 +20,4 @@ class Inform {
 
 }
 
-export default Inform;
+export default InformModel;

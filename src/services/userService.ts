@@ -1,51 +1,31 @@
-import Inform from "../model/class";
-let informList: Inform[] = [];
+import InformModel from "../model/informModel";
 
-exports.findInformById =(inform: Inform) => {
-  let foundInform: any;
-  try {
-    foundInform = informList.find((i:Inform) => i.id === inform.id);
-  }catch(err: any) {
-    console.log(err);
+// Class형태로 바꾸기 
+const userService = () => {
+  const informList: InformModel[] = [];
+  const getInformList = (): InformModel[] => informList;
+  const findIndex = (paramsNumber: number) => informList.findIndex((i:InformModel) => i.id == paramsNumber);
+  const findInformById = (reqInform: InformModel) : InformModel | undefined => informList.find((inform:InformModel) => inform.id === reqInform.id);
+
+  const pushInform = (inform: InformModel): InformModel[] => {
+    informList.push(inform);  
+    return informList;
   }
 
-  return foundInform;
+  const deleteInform = (paramsNumber: number): boolean => {
+    const informIndex: number = findIndex(paramsNumber);
+    let deleteFlag = false;
+    if (informIndex !== -1) {
+      informList.splice(informIndex, 1);
+      deleteFlag = true;
+    } 
+
+    return deleteFlag;
+  }
+
+  return {
+    getInformList, findIndex, findInformById, pushInform, deleteInform
+  }
 }
 
-exports.pushInform = (inform: Inform) => {
-  try {
-    informList.push(inform);
-  }
-  catch(err) {
-    console.log(err);
-  }
-  
-  return informList;
-}
-
-const findIndex = (paramsNumber: number) => {
-  let indexNumber: number = 0;
-  try {
-    indexNumber = informList.findIndex((i:Inform) => i.id == paramsNumber);
-  } catch(err) {
-    console.log(err);
-  }
-
-  return indexNumber;
-}
-
-exports.deleteInform = (paramsNumber: number) => {
-  let informIndex: number = findIndex(paramsNumber);
-
-  if(informIndex !== -1) {
-    informList.splice(informIndex, 1);
-  } else {
-    console.log("Not Found ID");
-  }
-
-  return informIndex;
-}
-
-export{informList, findIndex};
-
-
+export default userService();
