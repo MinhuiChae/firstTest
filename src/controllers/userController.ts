@@ -40,18 +40,27 @@ exports.delete = (req: express.Request, res: express.Response) => {
 exports.update = (req: express.Request, res: express.Response) => {
   const inform:InformModel = new InformModel(req.body as IInformReq);
   if(inform.isValidation()) {
-    const foundInform: InformModel | undefined = userService.findInformById(inform);
+    let foundInform: InformModel | undefined = userService.findInformById(inform);
     if(foundInform) {
-      if(foundInform.name !== inform.name) {
-        foundInform.name = inform.name;
-      }
-      if(foundInform.age !== inform.age) {
-        foundInform.age = inform.age;
-      }
-      if(foundInform.gender !== inform.gender) {
-        foundInform.gender = inform.gender;
-      }
+      if(foundInform !== inform) {
+        // let a: any = Object.values(inform);
+        // let aa: any = Object.keys(inform);
+        // let b = Object.values(foundInform);
 
+        // console.log("a:" , a);
+        // console.log("b:" , b);
+
+        // a.filter((x: any) => {
+        //   if(!b.includes(x) && foundInform) {
+        //     let l: number = (a.findIndex((d: any) => d == x));
+            
+        //     b[l] = x;
+        //   }
+        // });
+
+        let dd = userService.getInformList().findIndex((informs: InformModel) => informs === foundInform);
+        userService.getInformList()[dd] = inform;
+      }
       res.status(EStatusCode.SUCCESS).send({status:EStatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: userService.getInformList() });
     } else {
       res.status(EStatusCode.NOTFOUND).send({status: EStatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); 
