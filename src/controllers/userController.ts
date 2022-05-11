@@ -40,26 +40,22 @@ exports.delete = (req: express.Request, res: express.Response) => {
 exports.update = (req: express.Request, res: express.Response) => {
   const inform:InformModel = new InformModel(req.body as IInformReq);
   if(inform.isValidation()) {
-    let foundInform: InformModel | undefined = userService.findInformById(inform);
+    const foundInform: any = userService.findInformById(inform);
     if(foundInform) {
       if(foundInform !== inform) {
-        // let a: any = Object.values(inform);
-        // let aa: any = Object.keys(inform);
-        // let b = Object.values(foundInform);
+        const informValue: any = Object.values(inform);
+        const informKey: any = Object.keys(inform);
+        const foundInformValue = Object.values(foundInform);
 
-        // console.log("a:" , a);
-        // console.log("b:" , b);
+        informValue.filter((requestInform: any) => {
+          if(!foundInformValue.includes(requestInform) && foundInform) {
+            const foundValueIndex = (informValue.findIndex((requestInformIndex: number) => requestInformIndex == requestInform));
+            const foundKey = informKey[foundValueIndex];
 
-        // a.filter((x: any) => {
-        //   if(!b.includes(x) && foundInform) {
-        //     let l: number = (a.findIndex((d: any) => d == x));
-            
-        //     b[l] = x;
-        //   }
-        // });
+            foundInform[foundKey] = requestInform;
+          }
+        });
 
-        let dd = userService.getInformList().findIndex((informs: InformModel) => informs === foundInform);
-        userService.getInformList()[dd] = inform;
       }
       res.status(EStatusCode.SUCCESS).send({status:EStatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: userService.getInformList() });
     } else {
