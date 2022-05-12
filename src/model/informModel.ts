@@ -1,6 +1,5 @@
 
 import { IInformReq } from "../interface";
-type TInformKey = 'gender' | 'id' | 'name' | 'age';
 class InformModel {
   id: number = 0;
   name: string = "";
@@ -17,8 +16,6 @@ class InformModel {
   isValidation(): boolean {
     return this.id !== 0 && this.name !== "" && this.age  !== 0 && this.gender !== "";
   }
-
-
 }
 
 export default InformModel;

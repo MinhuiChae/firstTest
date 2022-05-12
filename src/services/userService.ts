@@ -1,19 +1,34 @@
 import InformModel from "../model/informModel";
+const informList: InformModel[] = [];
 
 // Class형태로 바꾸기 
-const userService = () => {
-  const informList: InformModel[] = [];
-  const getInformList = (): InformModel[] => informList;
-  const findIndex = (paramsNumber: number) => informList.findIndex((i:InformModel) => i.id == paramsNumber);
-  const findInformById = (reqInform: InformModel) : InformModel | undefined => informList.find((inform:InformModel) => inform.id === reqInform.id);
+const update = <InformModel , K extends keyof InformModel>(updateModel: InformModel, reqModel: InformModel, key: K) => {
+  if (reqModel[key]) { 
+    updateModel[key] = reqModel[key];
+  }
+}
 
-  const pushInform = (inform: InformModel): InformModel[] => {
-    informList.push(inform);  
+class userService {
+  
+  getInformList(): InformModel[] {
+    return informList;
+  } 
+  
+  findIndex(paramsNumber: number): number {
+    return informList.findIndex((i:InformModel) => i.id == paramsNumber);
+  }
+    
+  findInformById (reqInform: InformModel) : InformModel | undefined {
+    return informList.find((inform:InformModel) => inform.id === reqInform.id);
+  } 
+
+  pushInform (inform: InformModel): InformModel[] {
+    informList.push(inform); 
     return informList;
   }
 
-  const deleteInform = (paramsNumber: number): boolean => {
-    const informIndex: number = findIndex(paramsNumber);
+  deleteInform (paramsNumber: number): boolean {
+    const informIndex: number = this.findIndex(paramsNumber);
     let deleteFlag = false;
     if (informIndex !== -1) {
       informList.splice(informIndex, 1);
@@ -22,24 +37,12 @@ const userService = () => {
 
     return deleteFlag;
   }
-  
 
-  const updateInform = (updateModel: InformModel, reqModel: InformModel) => {
-    if(updateModel.name !== reqModel.name) {
-      updateModel.name = reqModel.name;
-    }
-    if(updateModel.age !== reqModel.age) {
-      updateModel.age = reqModel.age;
-    }
-    if(updateModel.gender !== reqModel.gender) {
-      updateModel.gender = reqModel.gender;
-    }
-
-  }
-
-  return {
-    getInformList, findIndex, findInformById, pushInform, deleteInform, updateInform
+  updateInform(updateModel: InformModel, reqModel: InformModel) {
+    Object.keys(updateModel).forEach((key) => {
+      update(updateModel, reqModel, key as keyof InformModel);
+    })
   }
 }
 
-export default userService();
+export default userService;
