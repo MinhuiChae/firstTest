@@ -22,9 +22,23 @@ const userService = () => {
 
     return deleteFlag;
   }
+  
+
+  const updateInform = (updateModel: InformModel, reqModel: InformModel) => {
+    if(updateModel.name !== reqModel.name) {
+      updateModel.name = reqModel.name;
+    }
+    if(updateModel.age !== reqModel.age) {
+      updateModel.age = reqModel.age;
+    }
+    if(updateModel.gender !== reqModel.gender) {
+      updateModel.gender = reqModel.gender;
+    }
+
+  }
 
   return {
-    getInformList, findIndex, findInformById, pushInform, deleteInform
+    getInformList, findIndex, findInformById, pushInform, deleteInform, updateInform
   }
 }
 

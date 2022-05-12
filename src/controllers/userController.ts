@@ -40,23 +40,9 @@ exports.delete = (req: express.Request, res: express.Response) => {
 exports.update = (req: express.Request, res: express.Response) => {
   const inform:InformModel = new InformModel(req.body as IInformReq);
   if(inform.isValidation()) {
-    const foundInform: any = userService.findInformById(inform);
+    const foundInform: InformModel | undefined = userService.findInformById(inform);
     if(foundInform) {
-      if(foundInform !== inform) {
-        const informValue: any = Object.values(inform);
-        const informKey: any = Object.keys(inform);
-        const foundInformValue = Object.values(foundInform);
-
-        informValue.filter((requestInform: any) => {
-          if(!foundInformValue.includes(requestInform) && foundInform) {
-            const foundValueIndex = (informValue.findIndex((requestInformIndex: number) => requestInformIndex == requestInform));
-            const foundKey = informKey[foundValueIndex];
-
-            foundInform[foundKey] = requestInform;
-          }
-        });
-
-      }
+      userService.updateInform(foundInform, inform);
       res.status(EStatusCode.SUCCESS).send({status:EStatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: userService.getInformList() });
     } else {
       res.status(EStatusCode.NOTFOUND).send({status: EStatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); 
@@ -66,4 +52,3 @@ exports.update = (req: express.Request, res: express.Response) => {
     res.status(EStatusCode.WRONGFORMAT).send({status: EStatusCode.WRONGFORMAT, msg: ResponseMessage.WRONG_FORMAT, data: []});
   }
 }
-
