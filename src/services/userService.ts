@@ -1,5 +1,5 @@
 import InformModel from "../model/informModel";
-const informList: InformModel[] = [];
+
 
 // Class형태로 바꾸기 
 const update = <InformModel , K extends keyof InformModel>(updateModel: InformModel, reqModel: InformModel, key: K) => {
@@ -9,29 +9,33 @@ const update = <InformModel , K extends keyof InformModel>(updateModel: InformMo
 }
 
 class userService {
-  
+  informList: InformModel[] = [];
+  constructor(informList: InformModel[]) {
+    this.informList = informList;
+  }
+
   getInformList(): InformModel[] {
-    return informList;
+    return this.informList;
   } 
   
   findIndex(paramsNumber: number): number {
-    return informList.findIndex((i:InformModel) => i.id == paramsNumber);
+    return this.informList.findIndex((i:InformModel) => i.id == paramsNumber);
   }
     
   findInformById (reqInform: InformModel) : InformModel | undefined {
-    return informList.find((inform:InformModel) => inform.id === reqInform.id);
+    return this.informList.find((inform:InformModel) => inform.id === reqInform.id);
   } 
 
   pushInform (inform: InformModel): InformModel[] {
-    informList.push(inform); 
-    return informList;
+    this.informList.push(inform); 
+    return this.informList;
   }
 
   deleteInform (paramsNumber: number): boolean {
     const informIndex: number = this.findIndex(paramsNumber);
     let deleteFlag = false;
     if (informIndex !== -1) {
-      informList.splice(informIndex, 1);
+      this.informList.splice(informIndex, 1);
       deleteFlag = true;
     } 
 

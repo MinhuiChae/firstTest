@@ -4,7 +4,8 @@ import ResponseMessage from "../common/responseMessage";
 import { IInformReq } from "../interface";
 import { EStatusCode } from "../enum";
 import UserService from "../services/userService";
-// const userService = new UserService();
+const informList: InformModel[] = [];
+
 // 클래스화하기
 
 class UserResponse {
@@ -29,7 +30,7 @@ class UserController {
     this.res = res;
     
     this.userResponse = new UserResponse(this.res);
-    this.userService = new UserService();
+    this.userService = new UserService(informList);
     
   }
 
@@ -41,12 +42,12 @@ class UserController {
     const inform:InformModel = new InformModel(this.req.body as IInformReq);
     if(inform.isValidation()) {
       if(this.userService.findInformById(inform)) {
-        this.res.status(EStatusCode.DUPLICATE).send({status: EStatusCode.DUPLICATE, msg: ResponseMessage.DUPLICATE_ID, data: []});
+        this.userResponse.response(EStatusCode.DUPLICATE, ResponseMessage.DUPLICATE_ID, []);
       } else {
-        this.res.status(EStatusCode.SUCCESS).send({status:EStatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: this.userService.pushInform(inform) });
+        this.userResponse.response(EStatusCode.SUCCESS, ResponseMessage.SUCCESS, this.userService.pushInform(inform));
       }
     } else {
-      this.res.status(EStatusCode.WRONGFORMAT).send({status: EStatusCode.WRONGFORMAT, msg: ResponseMessage.WRONG_FORMAT, data: []});
+      this.userResponse.response(EStatusCode.WRONGFORMAT, ResponseMessage.WRONG_FORMAT, []);
     }
   }
   
@@ -54,9 +55,9 @@ class UserController {
     const paramsId: number = Number(this.req.params.id);
     if (this.userService.deleteInform(paramsId) === true) {
       this.userService.deleteInform(paramsId);
-      this.res.status(EStatusCode.SUCCESS).send({status:EStatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: this.userService.getInformList() });
+      this.userResponse.response(EStatusCode.SUCCESS, ResponseMessage.SUCCESS, this.userService.getInformList());
     } else {
-      this.res.status(EStatusCode.NOTFOUND).send({status: EStatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); 
+      this.userResponse.response(EStatusCode.NOTFOUND, ResponseMessage.NOT_FOUNT_ID, []);
     } 
   }
   
@@ -67,12 +68,12 @@ class UserController {
       const foundInform: InformModel | undefined = this.userService.findInformById(inform);
       if(foundInform) {
         this.userService.updateInform(foundInform, inform);
-        this.res.status(EStatusCode.SUCCESS).send({status:EStatusCode.SUCCESS, msg: ResponseMessage.SUCCESS, data: this.userService.getInformList() });
+        this.userResponse.response(EStatusCode.SUCCESS, ResponseMessage.SUCCESS, this.userService.getInformList());
       } else {
-        this.res.status(EStatusCode.NOTFOUND).send({status: EStatusCode.NOTFOUND, msg: ResponseMessage.NOT_FOUNT_ID, data: []}); 
+        this.userResponse.response(EStatusCode.NOTFOUND, ResponseMessage.NOT_FOUNT_ID, []);
       }
     } else {
-      this.res.status(EStatusCode.WRONGFORMAT).send({status: EStatusCode.WRONGFORMAT, msg: ResponseMessage.WRONG_FORMAT, data: []});
+      this.userResponse.response(EStatusCode.WRONGFORMAT, ResponseMessage.WRONG_FORMAT, []);
     }
   }
 }
